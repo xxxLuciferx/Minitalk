@@ -5,63 +5,62 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: khaimer <khaimer@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/12/15 18:21:22 by khaimer           #+#    #+#             */
-/*   Updated: 2022/12/25 14:06:52 by khaimer          ###   ########.fr       */
+/*   Created: 2023/01/04 18:50:21 by khaimer           #+#    #+#             */
+/*   Updated: 2023/01/04 18:50:21 by khaimer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <stdlib.h>
 #include <unistd.h>
 #include <stdio.h>
 #include <signal.h>
-#include <unistd.h>
+#include <string.h>
 
+int counter = 7;
 
-int i = 7;
-
-void sigusr1_handler(int sig) 
+void	ft_putnbr(int n)
 {
-	static char c;
-	// if(!c)
-	// {
-	// 	c = 0;
-	// 	i = 7;
-	// }
-	if (sig == SIGUSR2)
+	int j;
+	if (n >= 0 && n <= 9)
 	{
-		// printf("this is value of i in sig2: %d \n", i);
-		c |= (1 << i);
-		// write(1, "1", 1);
-		i--;
+		j = n + '0';
+		write(1, &j, 1);
 	}
-	if (sig == SIGUSR1)
+	if (n >= 10)
 	{
-		// printf("this is value of i in sig1 : %d \n", i);
-		// write(1, "0", 1);
-		i--;
-	}
-	// printf("this is value of i -------- : %c \n", c);
-	if(i == -1)
-	{
-		// printf("we are here\n");
-		// string[8]= '\0';
-		// unsigned char d = strtol(string,NULL, 2);
-		write(1, &c, 1);
-		// write(1, "\n", 1);
-		// printf("this is c \n");
-
-		i = 7;
-		c = 0;
+		ft_putnbr(n / 10);
+		ft_putnbr(n % 10);
 	}
 }
 
+void    signal_hundler(int sig)
+{
+    static char c;
+    if(SIGUSR2 == sig)
+    {
+        c = c | (1 << counter);
+        counter--;
+    }
+    else if(SIGUSR1 == sig)
+        counter--;
+    if(counter == -1)
+    {
+        write(1, &c, 1);
+        c = 0;
+        counter = 7;
+    }
+}
+
+
 int main()
 {
-	printf("PID: %d\n",getpid());
-	signal(SIGUSR1, sigusr1_handler);
-	signal(SIGUSR2, sigusr1_handler);
-	while(1)
-	{
-		pause();
-	}
+    int PID;
+    PID = getpid();
+	ft_putnbr(PID);
+	write(1,"\n", 1);
+    signal(SIGUSR1,signal_hundler);
+    signal(SIGUSR2,signal_hundler);
+    while(1)
+    {
+        pause();
+    }
 }

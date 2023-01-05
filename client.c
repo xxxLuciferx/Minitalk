@@ -5,80 +5,61 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: khaimer <khaimer@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/12/15 18:21:19 by khaimer           #+#    #+#             */
-/*   Updated: 2022/12/25 16:19:13 by khaimer          ###   ########.fr       */
+/*   Created: 2023/01/04 18:50:23 by khaimer           #+#    #+#             */
+/*   Updated: 2023/01/05 17:34:53 by khaimer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <signal.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include <unistd.h>
+#include <stdio.h>
+#include <signal.h>
+#include <string.h>
 
+int counter = 7; 
 
-int	ft_atoi(const char *str)
+int	ft_atoi(char *string)
 {
-	int	a;
-	int	sign;
-	int	res;
-
-	res = 0;
-	a = 0;
-	sign = 1;
-	while (str[a] == ' ' || (str[a] <= 13 && str[a] >= 9))
-		a++;
-	if (str[a] == '-')
-	{
-		sign = sign * -1;
-		a++;
-	}
-	else if (str[a] == '+')
-		a++;
-	while (str[a] <= '9' && str[a] >= '0')
-	{
-		res = str[a] - '0' + (res * 10);
-		a++;
-	}
-	return (res * sign);
-}
-void	signal_sender(char c, int PID)
-{	
-	int i;
-	i = 7;
-
-	while(i >= 0)
-	{	
-		if((c >> i) & 1)
-		{
-			kill(PID, SIGUSR2);
-			// printf("1");
-			usleep(70);
-		}
-		else
-		{
-			kill(PID, SIGUSR1);
-			// printf("0");
-			usleep(70);
-		}
-		i--;
-	}
-	// printf("\n");
-}
-
-int main(int argc, char *argv[])
-{
-	int i;
-	int PID;
-	// int opperation;
+    int result;
+    int i;
+	
+	result = 0;
 	i = 0;
-    PID = ft_atoi(argv[1]);
-	while(argv[2][i] != '\0')
+    while ((string[i] >= '0' && string[i] <= '9') && string[i] != '\0')
 	{
-		signal_sender(argv[2][i], PID);
+		result = result * 10;
+		result = result + string[i] - '0';
 		i++;
 	}
-    // opperation = kill(PID,SIGUSR2);
-	// if(opperation == 0)
-    printf("\nsignal sent successfully");
+    return(result);
+}
+void    sendchar(char c, int PID)
+{
+    while(counter >= 0)
+    {
+        if(c & (1 << counter))
+            kill(PID, SIGUSR2);
+        else
+            kill(PID, SIGUSR1);
+        counter--;
+		usleep(70); 
+    }
+    counter = 7;
+}
+
+
+int main(int argc, char **argv)
+{
+    if(argc == 3)
+    {
+        int i = 0;
+        int PID = ft_atoi(argv[1]);
+        if(PID == 0)
+            return 0; 
+        while(argv[2][i] != '\0')
+        {
+            sendchar(argv[2][i], PID);
+            i++;
+        }
+    }
+    return 0;
 }
