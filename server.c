@@ -15,7 +15,7 @@
 #include <signal.h>
 #include <string.h>
 
-int counter = 7;
+static int counter = 7;
 
 void	ft_putnbr(int n)
 {
@@ -32,10 +32,10 @@ void	ft_putnbr(int n)
 	}
 }
 
-void    signal_hundler(int sig, siginfo_t *info, void *content) //
+void    signal_hundler(int sig, siginfo_t *info, void *content)
 {
     static char c;
-	int Client_PID;
+	static int Client_PID;
 	static int Current_process;
 	(void)content;
 
@@ -55,6 +55,11 @@ void    signal_hundler(int sig, siginfo_t *info, void *content) //
         counter--;
     if(counter == -1)
     {
+		if(c == '\0')
+		{
+			kill(Client_PID,SIGUSR1);
+		}
+
 		if(Current_process == Client_PID)
         	write(1, &c, 1);
         c = 0;
@@ -73,12 +78,9 @@ int main()
 	st.sa_flags = SA_SIGINFO;
 	sigaction(SIGUSR1,&st,NULL);
 	sigaction(SIGUSR2,&st,NULL);
-
-
-    // signal(SIGUSR1,signal_hundler); // 0
-    // signal(SIGUSR2,signal_hundler); // 1
     while(1)
     {
         pause();
     }
+	return 0;
 }
