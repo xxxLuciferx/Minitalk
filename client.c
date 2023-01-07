@@ -6,7 +6,7 @@
 /*   By: khaimer <khaimer@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/04 18:50:23 by khaimer           #+#    #+#             */
-/*   Updated: 2023/01/05 17:34:53 by khaimer          ###   ########.fr       */
+/*   Updated: 2023/01/07 12:39:59 by khaimer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 #include <signal.h>
 #include <string.h>
 
-int counter = 7; 
+// int counter = 7; 
 
 int	ft_atoi(char *string)
 {
@@ -32,18 +32,21 @@ int	ft_atoi(char *string)
 	}
     return(result);
 }
+
 void    sendchar(char c, int PID)
 {
+	int counter;
+	
+    counter = 7;
     while(counter >= 0)
     {
         if(c & (1 << counter))
-            kill(PID, SIGUSR2);
+            kill(PID, SIGUSR2); // 1
         else
-            kill(PID, SIGUSR1);
+            kill(PID, SIGUSR1); // 0
         counter--;
 		usleep(70); 
     }
-    counter = 7;
 }
 
 

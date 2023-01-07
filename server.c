@@ -32,9 +32,20 @@ void	ft_putnbr(int n)
 	}
 }
 
-void    signal_hundler(int sig)
+void    signal_hundler(int sig, siginfo_t *info, void *content) //
 {
     static char c;
+	int Client_PID;
+	static int Current_process;
+	(void)content;
+
+	Client_PID = info->si_pid;
+	if(Current_process != Client_PID)
+	{
+		c = 0;
+		counter = 7;
+		Current_process = Client_PID;
+	}
     if(SIGUSR2 == sig)
     {
         c = c | (1 << counter);
@@ -44,12 +55,12 @@ void    signal_hundler(int sig)
         counter--;
     if(counter == -1)
     {
-        write(1, &c, 1);
+		if(Current_process == Client_PID)
+        	write(1, &c, 1);
         c = 0;
         counter = 7;
     }
 }
-
 
 int main()
 {
@@ -57,8 +68,15 @@ int main()
     PID = getpid();
 	ft_putnbr(PID);
 	write(1,"\n", 1);
-    signal(SIGUSR1,signal_hundler);
-    signal(SIGUSR2,signal_hundler);
+	struct sigaction st;
+	st.sa_sigaction = signal_hundler;
+	st.sa_flags = SA_SIGINFO;
+	sigaction(SIGUSR1,&st,NULL);
+	sigaction(SIGUSR2,&st,NULL);
+
+
+    // signal(SIGUSR1,signal_hundler); // 0
+    // signal(SIGUSR2,signal_hundler); // 1
     while(1)
     {
         pause();
