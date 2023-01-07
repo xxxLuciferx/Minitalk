@@ -10,8 +10,8 @@
 #                                                                              #
 # **************************************************************************** #
 
-NAME = Server
-SNAME = Client
+NAME = server
+SNAME = client
 CFLAG = gcc -Wall -Wextra -Werror
 OBJ = client.c
 OBJ1 = server.c

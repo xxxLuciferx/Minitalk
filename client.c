@@ -6,14 +6,12 @@
 /*   By: khaimer <khaimer@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/04 18:50:23 by khaimer           #+#    #+#             */
-/*   Updated: 2023/01/07 18:45:10 by khaimer          ###   ########.fr       */
+/*   Updated: 2023/01/07 18:51:35 by khaimer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <unistd.h>
-#include <stdio.h>
 #include <signal.h>
-#include <string.h> 
 
 int	ft_atoi(char *string)
 {
@@ -49,7 +47,7 @@ void    sendchar(char c, int PID)
 void	message(int sig)
 {
 	if(sig == SIGUSR1)
-		write(1,"every message receive", 21);
+		write(1,"Your message was received", 25);
 }
 
 int main(int argc, char **argv)
