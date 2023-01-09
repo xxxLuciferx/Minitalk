@@ -1,5 +1,5 @@
 /* ************************************************************************** */
-/*                                                                            */
+/*		                                                                    */
 /*                                                        :::      ::::::::   */
 /*   server.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
@@ -13,11 +13,12 @@
 #include <unistd.h>
 #include <signal.h>
 
-static int counter = 7;
+static int	g_counter = 7;
 
 void	ft_putnbr(int n)
 {
-	int j;
+	int	j;
+
 	if (n >= 0 && n <= 9)
 	{
 		j = n + '0';
@@ -30,52 +31,53 @@ void	ft_putnbr(int n)
 	}
 }
 
-void    signal_hundler(int sig, siginfo_t *info, void *content)
+void	signal_hundler(int sig, siginfo_t *info, void *content)
 {
-	(void)content;
-    static char c;
-	static int Client_PID;
-	static int Current_process;
+	static char	c;
+	static int	client_pid;
+	static int	current_process;
 
-	Client_PID = info->si_pid;
-	if(Current_process != Client_PID)
+	(void)content;
+	client_pid = info->si_pid;
+	if (current_process != client_pid)
 	{
 		c = 0;
-		counter = 7;
-		Current_process = Client_PID;
+		g_counter = 7;
+		current_process = client_pid;
 	}
-    if(SIGUSR2 == sig)
-    {
-        c = c | (1 << counter);
-        counter--;
-    }
-    else if(SIGUSR1 == sig)
-        counter--;
-    if(counter == -1)
-    {
-		if(c == '\0')
-			kill(Client_PID,SIGUSR1);
-		if(Current_process == Client_PID)
-        	write(1, &c, 1);
-        c = 0;
-        counter = 7;
-    }
+	if (SIGUSR2 == sig)
+	{
+		c = c | (1 << g_counter);
+		g_counter--;
+	}
+	else if (SIGUSR1 == sig)
+		g_counter--;
+	if (g_counter == -1)
+	{
+		if (c == '\0')
+			kill(client_pid, SIGUSR1);
+		if (current_process == client_pid)
+			write(1, &c, 1);
+		c = 0;
+		g_counter = 7;
+	}
 }
 
-int main()
+int	main(void)
 {
-    int PID;
-    PID = getpid();
-	ft_putnbr(PID);
-	write(1,"\n", 1);
-	struct sigaction st;
+	struct sigaction	st;
+	int					pid;
+
+	pid = getpid();
+	ft_putnbr(pid);
+	write(1, "\n", 1);
 	st.sa_sigaction = signal_hundler;
 	st.sa_flags = SA_SIGINFO;
-	sigaction(SIGUSR1,&st,NULL);
-	sigaction(SIGUSR2,&st,NULL);
-    while(1)
-    {
-        pause();
-    }
-	return 0;
+	sigaction(SIGUSR1, &st, NULL);
+	sigaction(SIGUSR2, &st, NULL);
+	while (1)
+	{
+		pause();
+	}
+	return (0);
 }
