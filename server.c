@@ -32,10 +32,10 @@ void	ft_putnbr(int n)
 
 void    signal_hundler(int sig, siginfo_t *info, void *content)
 {
+	(void)content;
     static char c;
 	static int Client_PID;
 	static int Current_process;
-	(void)content;
 
 	Client_PID = info->si_pid;
 	if(Current_process != Client_PID)
@@ -54,10 +54,7 @@ void    signal_hundler(int sig, siginfo_t *info, void *content)
     if(counter == -1)
     {
 		if(c == '\0')
-		{
 			kill(Client_PID,SIGUSR1);
-		}
-
 		if(Current_process == Client_PID)
         	write(1, &c, 1);
         c = 0;
