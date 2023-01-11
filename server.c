@@ -13,7 +13,7 @@
 #include <unistd.h>
 #include <signal.h>
 
-static int	g_counter = 7;
+int	g_counter = 7;
 
 void	ft_putnbr(int n)
 {
@@ -31,6 +31,15 @@ void	ft_putnbr(int n)
 	}
 }
 
+void	print(int pid, char *c)
+{
+	if (*c == '\0')
+		kill(pid, SIGUSR1);
+	write(1, c, 1);
+	g_counter = 7;
+	*c = 0;
+}
+
 void	signal_hundler(int sig, siginfo_t *info, void *content)
 {
 	static char	c;
@@ -41,8 +50,8 @@ void	signal_hundler(int sig, siginfo_t *info, void *content)
 	client_pid = info->si_pid;
 	if (current_process != client_pid)
 	{
-		c = 0;
 		g_counter = 7;
+		c = 0;
 		current_process = client_pid;
 	}
 	if (SIGUSR2 == sig)
@@ -53,14 +62,7 @@ void	signal_hundler(int sig, siginfo_t *info, void *content)
 	else if (SIGUSR1 == sig)
 		g_counter--;
 	if (g_counter == -1)
-	{
-		if (c == '\0')
-			kill(client_pid, SIGUSR1);
-		if (current_process == client_pid)
-			write(1, &c, 1);
-		c = 0;
-		g_counter = 7;
-	}
+		print(client_pid, &c);
 }
 
 int	main(void)
@@ -70,7 +72,6 @@ int	main(void)
 
 	pid = getpid();
 	ft_putnbr(pid);
-	write(1, "\n", 1);
 	st.sa_sigaction = signal_hundler;
 	st.sa_flags = SA_SIGINFO;
 	sigaction(SIGUSR1, &st, NULL);
