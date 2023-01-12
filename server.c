@@ -31,10 +31,8 @@ void	ft_putnbr(int n)
 	}
 }
 
-void	print(int pid, char *c)
+void	print(char *c)
 {
-	if (*c == '\0')
-		kill(pid, SIGUSR1);
 	write(1, c, 1);
 	g_counter = 7;
 	*c = 0;
@@ -62,7 +60,7 @@ void	signal_hundler(int sig, siginfo_t *info, void *content)
 	else if (SIGUSR1 == sig)
 		g_counter--;
 	if (g_counter == -1)
-		print(client_pid, &c);
+		print(&c);
 }
 
 int	main(void)

@@ -71,5 +71,8 @@ int	main(int argc, char **argv)
 		sendchar(argv[2][i], pid);
 		i++;
 	}
+	sendchar('\0', pid);
+	while (1)
+		pause();
 	return (0);
 }
